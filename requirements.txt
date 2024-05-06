@@ -1,0 +1,7 @@
+torch == 2.3.0
+pandas ==  2.2.2
+numpy == 1.26.4
+nepali-stemmer
+nltk == 3.8.1
+scikit-learn == 0.24.2
+torchtext == 0.18.0
