@@ -29,7 +29,9 @@ Gated Recurrent Unit (GRU) is another type of recurrent neural network (RNN) arc
 ## Evaluation
 
 ## Results
+**News from ekantipur**
+![Alt text](/media/image-1.png)
+**output**
+![Alt text](/media/image.png)
 
-
-## Conclusion
 

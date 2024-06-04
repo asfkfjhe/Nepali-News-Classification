@@ -1,4 +1,7 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import torch
 import torch.nn.functional as F
@@ -11,16 +14,25 @@ from nepali_stemmer.stemmer import NepStemmer
 import nltk
 from nltk.corpus import stopwords
 import re
-# from torchtext.legacy.data import Field
-
 
 # Define the FastAPI app
 app = FastAPI()
 
+# Mount the static files directory
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Allow CORS for all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+)
+
 # Define the input data schema
 class TextRequest(BaseModel):
     text: str
-
 
 GRU_MODEL_PATH = "GRU.pth"
 LSTM_MODEL_PATH = "RNN.pth"
@@ -66,15 +78,11 @@ LABEL.build_vocab(train_dataset)
 INPUT_DIM_LSTM = 5422
 INPUT_DIM_GRU = 5202
 
-
-
 PAD_IDX = TEXT.vocab.stoi[TEXT.pad_token]
-
 
 def clean_and_tokenize(text):
     #removing unnecessary symbols
     clean_text = re.sub(r'[\n,|।\'":]', '', text)
-
 
     #Tokenizing Text 
     nepstem = NepStemmer()
@@ -87,9 +95,6 @@ def clean_and_tokenize(text):
     C_T_S = ' '.join(filtered_words)
 
     return C_T_S
-    
-
-
 
 cats = {
     'politics' : 0, 
@@ -100,7 +105,6 @@ cats = {
 }
 
 map_dict = {v: k for k, v in cats.items()}
-
 
 # Load the trained GRU model
 gru_model = GRU(INPUT_DIM_GRU, EMBEDDING_DIM, BIDIRECTIONAL, HIDDEN_DIM, NUM_LAYERS, OUTPUT_DIM, DROPOUT, PAD_IDX)
@@ -128,7 +132,6 @@ def predict(model, sentence):
         return {'category': predicted_label, 'probability': max_prob.item()}
 
 # Define the API endpoint
-
 @app.post("/predict")
 async def classify_text(request: TextRequest):
     try:
@@ -137,7 +140,11 @@ async def classify_text(request: TextRequest):
         return {'gru_prediction': gru_prediction, 'lstm_prediction': lstm_prediction}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+# Serve the main HTML file
+@app.get("/")
+async def read_index():
+    return RedirectResponse(url="/static/index.html")
 
 if __name__ == "__main__":
     import nest_asyncio

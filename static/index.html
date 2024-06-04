@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Classification</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Nepali News Classification</h1>
+        <textarea id="text-input" placeholder="Enter text here..."></textarea>
+        <button onclick="classifyText()">Classify</button>
+        <div id="results">
+            <h2>Results</h2>
+            <div id="gru-result">
+                <h3>GRU Model</h3>
+                <p>Category: <span id="gru-category"></span></p>
+                <p>Probability: <span id="gru-probability"></span></p>
+            </div>
+            <div id="lstm-result">
+                <h3>LSTM Model</h3>
+                <p>Category: <span id="lstm-category"></span></p>
+                <p>Probability: <span id="lstm-probability"></span></p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
